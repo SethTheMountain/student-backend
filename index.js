@@ -22,7 +22,7 @@ const db = mysql.createPool({
 // ✅ Allowed Origins for CORS
 const allowedOrigins = [
   "http://localhost:3000", // ✅ Allows local frontend during development
-  "https://student-frontend-l0iv3tst8-seththemountains-projects.vercel.app" // ✅ Your actual deployed frontend URL
+  "https://student-frontend-sandy.vercel.app" // ✅ Your actual deployed frontend URL
 ];
 
 db.getConnection((err, connection) => {
