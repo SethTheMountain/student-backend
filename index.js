@@ -19,6 +19,12 @@ const db = mysql.createPool({
   queueLimit: 0,
 });
 
+// ✅ Allowed Origins for CORS
+const allowedOrigins = [
+  "http://localhost:3000", // ✅ Allows local frontend during development
+  "https://student-frontend-l0iv3tst8-seththemountains-projects.vercel.app" // ✅ Your actual deployed frontend URL
+];
+
 db.getConnection((err, connection) => {
   if (err) {
     console.error("❌ Database connection failed:", err);
@@ -28,10 +34,16 @@ db.getConnection((err, connection) => {
   connection.release(); // ✅ Release the connection back to the pool
 });
 
-// ✅ CORS Configuration
+// ✅ CORS Configuration (Allow Localhost and Deployed Frontend)
 app.use(
   cors({
-    origin: ["https://student-frontend-l0iv3tst8-seththemountains-projects.vercel.app"],
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: "GET, POST, DELETE",
     allowedHeaders: "Content-Type",
   })
@@ -42,6 +54,7 @@ app.get("/", (req, res) => {
   res.send("✅ Backend API is running!");
 });
 
+// ✅ Test Database Connection
 app.get("/test-db", (req, res) => {
   db.query("SELECT 1", (err, results) => {
     if (err) {
@@ -52,7 +65,7 @@ app.get("/test-db", (req, res) => {
   });
 });
 
-// ✅ Fetch All Students (Fixed to Use Pool)
+// ✅ Fetch All Students
 app.get("/students", (req, res) => {
   db.query("SELECT * FROM students", (err, results) => {
     if (err) {
@@ -63,7 +76,7 @@ app.get("/students", (req, res) => {
   });
 });
 
-// ✅ Register a New Student (Fixed to Use Pool)
+// ✅ Register a New Student
 app.post("/students", (req, res) => {
   const { name, email, phone, address, courses, idNumber, emergencyContactEmail, emergencyContactPhone } = req.body;
 
@@ -84,7 +97,7 @@ app.post("/students", (req, res) => {
   });
 });
 
-// ✅ Delete a Student by ID (Fixed to Use Pool)
+// ✅ Delete a Student by ID
 app.delete("/students/:id", (req, res) => {
   const { id } = req.params;
 
