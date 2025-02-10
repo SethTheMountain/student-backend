@@ -42,6 +42,16 @@ app.get("/", (req, res) => {
   res.send("✅ Backend API is running!");
 });
 
+app.get("/test-db", (req, res) => {
+  db.query("SELECT 1", (err, results) => {
+    if (err) {
+      console.error("❌ Database connection test failed:", err);
+      return res.status(500).json({ error: "Database connection failed: " + err.message });
+    }
+    res.json({ message: "✅ Database connection successful", results });
+  });
+});
+
 // ✅ Fetch All Students (Fixed to Use Pool)
 app.get("/students", (req, res) => {
   db.query("SELECT * FROM students", (err, results) => {
